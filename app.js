@@ -37,10 +37,23 @@ function save() {
   localStorage.setItem("timetracker-data", JSON.stringify(data));
 }
 
+function sortMonth(ym) {
+  if (data[ym]) {
+    data[ym].sort((a, b) => {
+      if (a.date < b.date) return -1;
+      if (a.date > b.date) return 1;
+      return 0;
+    });
+  }
+}
+
 function render() {
   const ym = monthPicker.value;
   if (!ym) return;
   recordsBody.innerHTML = "";
+
+  // ordina i record prima di mostrarli
+  sortMonth(ym);
 
   let totOre = 0;
   let giorniLavorati = 0;
@@ -146,6 +159,7 @@ function exportCSV() {
   const ym = monthPicker.value;
   if (!ym) return;
   let rows = [["Data","Entrata","Uscita","Durata","Delta","Tipo assenza"]];
+  sortMonth(ym);
   (data[ym] || []).forEach(rec => {
     let dIn = rec.in ? new Date(rec.in).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : "";
     let dOut = rec.out ? new Date(rec.out).toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : "";
@@ -228,4 +242,5 @@ recordsBody.addEventListener("change", e => {
 let now = new Date();
 monthPicker.value = now.toISOString().slice(0,7);
 render();
+
 
