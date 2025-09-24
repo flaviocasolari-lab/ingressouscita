@@ -71,15 +71,13 @@ function render() {
     }
 
     tr.innerHTML = `
-      <td>${rec.date}</td>
+      <td contenteditable="true" data-field="date">${rec.date}</td>
       <td contenteditable="true" data-field="in">${dIn ? dIn.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : ""}</td>
       <td contenteditable="true" data-field="out">${dOut ? dOut.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : ""}</td>
       <td>${dur}</td>
       <td>${deltaStr}</td>
       <td>${rec.absence ? rec.absence.type : ""}</td>
-      <td>
-        <button class="delBtn" data-idx="${idx}">Cancella</button>
-      </td>
+      <td><button class="delBtn" data-idx="${idx}">Cancella</button></td>
     `;
     recordsBody.appendChild(tr);
   });
@@ -195,15 +193,27 @@ recordsBody.addEventListener("blur", e => {
     const ym = monthPicker.value;
     const idx = [...recordsBody.children].indexOf(e.target.parentNode);
     let rec = data[ym][idx];
-    let timeStr = e.target.textContent.trim();
-    if (timeStr) {
-      let [h,m] = timeStr.split(":");
-      let dateObj = new Date(rec.date);
-      dateObj.setHours(h, m);
-      rec[e.target.dataset.field] = dateObj.toISOString();
+    let value = e.target.textContent.trim();
+
+    if (e.target.dataset.field === "date") {
+      // aggiorna la data (controllo formato base)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        rec.date = value;
+      } else {
+        alert("Formato data non valido (usa YYYY-MM-DD)");
+      }
     } else {
-      rec[e.target.dataset.field] = null;
+      // gestisci entrata/uscita
+      if (value) {
+        let [h,m] = value.split(":");
+        let dateObj = new Date(rec.date);
+        dateObj.setHours(h, m);
+        rec[e.target.dataset.field] = dateObj.toISOString();
+      } else {
+        rec[e.target.dataset.field] = null;
+      }
     }
+
     save();
     render();
   }
@@ -213,4 +223,3 @@ recordsBody.addEventListener("blur", e => {
 let now = new Date();
 monthPicker.value = now.toISOString().slice(0,7);
 render();
-
