@@ -71,7 +71,7 @@ function render() {
     }
 
     tr.innerHTML = `
-      <td contenteditable="true" data-field="date">${rec.date}</td>
+      <td><input type="date" value="${rec.date}" data-field="date" data-idx="${idx}"></td>
       <td contenteditable="true" data-field="in">${dIn ? dIn.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : ""}</td>
       <td contenteditable="true" data-field="out">${dOut ? dOut.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}) : ""}</td>
       <td>${dur}</td>
@@ -153,7 +153,10 @@ function exportCSV() {
     if (diffMinutes >= 360) diffMinutes -= 60;
     let dur = diffMinutes ? toHM(diffMinutes) : "";
     let deltaStr = diffMinutes ? diffHM(diffMinutes,480) : "";
-    rows.push([rec.date,dIn,dOut,dur,deltaStr,rec.absence?rec.absence.type:""]);
+    // formattazione data in italiano
+    let [y,m,d] = rec.date.split("-");
+    let itaDate = `${d}/${m}/${y}`;
+    rows.push([itaDate,dIn,dOut,dur,deltaStr,rec.absence?rec.absence.type:""]);
   });
 
   let csv = rows.map(r=>r.join(",")).join("\n");
@@ -189,29 +192,19 @@ recordsBody.addEventListener("click", e => {
 });
 
 recordsBody.addEventListener("blur", e => {
-  if (e.target.dataset.field) {
+  if (e.target.dataset.field === "in" || e.target.dataset.field === "out") {
     const ym = monthPicker.value;
     const idx = [...recordsBody.children].indexOf(e.target.parentNode);
     let rec = data[ym][idx];
     let value = e.target.textContent.trim();
 
-    if (e.target.dataset.field === "date") {
-      // aggiorna la data (controllo formato base)
-      if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        rec.date = value;
-      } else {
-        alert("Formato data non valido (usa YYYY-MM-DD)");
-      }
+    if (value) {
+      let [h,m] = value.split(":");
+      let dateObj = new Date(rec.date);
+      dateObj.setHours(h, m);
+      rec[e.target.dataset.field] = dateObj.toISOString();
     } else {
-      // gestisci entrata/uscita
-      if (value) {
-        let [h,m] = value.split(":");
-        let dateObj = new Date(rec.date);
-        dateObj.setHours(h, m);
-        rec[e.target.dataset.field] = dateObj.toISOString();
-      } else {
-        rec[e.target.dataset.field] = null;
-      }
+      rec[e.target.dataset.field] = null;
     }
 
     save();
@@ -219,7 +212,20 @@ recordsBody.addEventListener("blur", e => {
   }
 }, true);
 
+// gestione modifica date da calendario
+recordsBody.addEventListener("change", e => {
+  if (e.target.dataset.field === "date") {
+    const ym = monthPicker.value;
+    const idx = e.target.dataset.idx;
+    let rec = data[ym][idx];
+    rec.date = e.target.value;  // già in YYYY-MM-DD
+    save();
+    render();
+  }
+});
+
 // ---------- Init ----------
 let now = new Date();
 monthPicker.value = now.toISOString().slice(0,7);
 render();
+
