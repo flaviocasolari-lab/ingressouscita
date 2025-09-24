@@ -213,3 +213,4 @@ recordsBody.addEventListener("blur", e => {
 let now = new Date();
 monthPicker.value = now.toISOString().slice(0,7);
 render();
+
