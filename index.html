@@ -3,33 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TimeTracker</title>
+  <title>Time Tracker</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="manifest" href="manifest.json">
 </head>
 <body>
-  <h1>TimeTracker</h1>
+  <h1>Time Tracker</h1>
 
-  <section>
-    <label for="monthPicker">Seleziona mese:</label>
+  <!-- Pulsante ingresso/uscita -->
+  <button id="toggleBtn" class="bigBtn">Tocca per Entrare</button>
+
+  <!-- Pulsante assenze -->
+  <button id="absenceBtn" class="absenceBtn">Inserisci Assenza</button>
+
+  <!-- Sezione sommario -->
+  <div id="summary">
+    <div class="row">
+      <span><strong>Totale ore mese:</strong> <span id="summaryHours">0h 00m</span></span>
+      <span><strong>Delta mese:</strong> <span id="recupero">0h 00m</span></span>
+    </div>
+    <div class="row">
+      <span><strong>Ferie:</strong> <span id="summaryFerie">0</span></span>
+      <span><strong>Permessi:</strong> <span id="summaryPermessi">0</span></span>
+      <span><strong>104:</strong> <span id="summary104">0</span></span>
+    </div>
+    <div class="row">
+      <button id="clearMonth" class="smallBtn">Cancella mese</button>
+      <button id="export" class="smallBtn">Esporta CSV</button>
+    </div>
+  </div>
+
+  <!-- Selezione mese -->
+  <div>
+    <label for="monthPicker">Mese:</label>
     <input type="month" id="monthPicker">
-  </section>
+  </div>
 
-  <section>
-    <button id="toggleBtn">Tocca per Entrare</button>
-    <button id="absenceBtn">Inserisci Assenza</button>
-    <button id="export">Esporta CSV</button>
-    <button id="clearMonth">Pulisci mese</button>
-  </section>
-
+  <!-- Tabella dati -->
   <table>
     <thead>
       <tr>
         <th>Data</th>
         <th>Entrata</th>
         <th>Uscita</th>
-        <th>Ore</th>
-        <th>Δ</th>
+        <th>Durata</th>
+        <th>Delta</th>
         <th>Assenza</th>
         <th>Azioni</th>
       </tr>
@@ -37,28 +54,18 @@
     <tbody id="records"></tbody>
   </table>
 
-  <section id="summary">
-    <p>Ore lavorate: <span id="summaryHours">0h 00m</span></p>
-    <p>Giorni di ferie: <span id="summaryFerie">0</span></p>
-    <p>Ore di permesso: <span id="summaryPermessi">0</span></p>
-    <p>Ore 104: <span id="summary104">0</span></p>
-    <p id="recupero">Δ mese: 0h 00m</p>
-  </section>
-
-  <!-- Modal assenze -->
+  <!-- Modale assenze -->
   <div id="absenceModal" class="modal">
     <div class="modal-content">
-      <h2>Inserisci assenza</h2>
-      <label for="absenceDate">Data:</label>
-      <input type="date" id="absenceDate"><br><br>
-      <label for="absenceType">Tipo:</label>
-      <select id="absenceType">
-        <option value="ferie">Ferie</option>
-        <option value="permesso">Permesso</option>
-        <option value="104">Legge 104</option>
-      </select><br><br>
-      <label for="absenceHours">Ore (solo per permessi/104):</label>
-      <input type="number" id="absenceHours" min="0" step="0.5"><br><br>
+      <label>Data: <input type="date" id="absenceDate"></label><br>
+      <label>Tipo:
+        <select id="absenceType">
+          <option value="ferie">Ferie</option>
+          <option value="permesso">Permesso</option>
+          <option value="104">104</option>
+        </select>
+      </label><br>
+      <label>Ore (solo per permessi e 104): <input type="number" id="absenceHours" min="0" step="0.5"></label><br>
       <button id="saveAbsence">Salva</button>
       <button id="closeAbsence">Chiudi</button>
     </div>
