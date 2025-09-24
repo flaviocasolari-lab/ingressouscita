@@ -2,74 +2,75 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>TimeTracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" sizes="192x192" href="icon-192.png">
-  <meta name="theme-color" content="#007aff">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Tracker</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <h1>Time Tracker</h1>
 
-<h1>TimeTracker</h1>
+  <!-- Pulsante ingresso/uscita -->
+  <button id="toggleBtn" class="bigBtn">Tocca per Entrare</button>
 
-<label>Mese:
-  <input type="month" id="monthPicker">
-</label>
+  <!-- Pulsante assenze -->
+  <button id="absenceBtn" class="absenceBtn">Inserisci Assenza</button>
 
-<button id="toggleBtn">Tocca per Entrare</button>
-<button id="absenceBtn">Aggiungi Assenza</button>
-
-<div class="summary">
-  <p><b>Totale mese:</b> <span id="summaryHours">0h 00m</span></p>
-  <p>Ferie: <span id="summaryFerie">0</span> gg | Permessi: <span id="summaryPermessi">0</span> h | 104: <span id="summary104">0</span> h</p>
-  <p id="recupero">Δ mese: 0h 00m</p>
-  <p>
-    <button id="export" class="smallBtn">Esporta CSV</button>
-    <button id="clearMonth" class="smallBtn">Cancella mese (backup)</button>
-  </p>
-</div>
-
-<table>
-<thead>
-<tr>
-  <th>Data</th>
-  <th>Entrata</th>
-  <th>Uscita</th>
-  <th>Durata</th>
-  <th>Δ (Recupero/Debito)</th>
-  <th>Tipo</th>
-  <th>Azioni</th>
-</tr>
-</thead>
-<tbody id="records"></tbody>
-</table>
-
-<!-- Modal assenze -->
-<div id="absenceModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5);">
-  <div style="background:#fff; padding:20px; margin:100px auto; width:90%; max-width:400px; border-radius:8px;">
-    <h3>Aggiungi Assenza</h3>
-    <label>Data: <input type="date" id="absenceDate"></label><br>
-    <label>Tipo:
-      <select id="absenceType">
-        <option value="ferie">Ferie (giorno)</option>
-        <option value="permesso">Permesso (ore)</option>
-        <option value="104">104 (ore)</option>
-      </select>
-    </label><br>
-    <label>Ore (solo per permessi/104):
-      <input type="number" id="absenceHours" min="0.5" max="8" step="0.5">
-    </label><br><br>
-    <button id="saveAbsence">Salva</button>
-    <button id="closeAbsence">Chiudi</button>
+  <!-- Sezione sommario -->
+  <div id="summary">
+    <div class="row">
+      <span><strong>Totale ore mese:</strong> <span id="summaryHours">0h 00m</span></span>
+      <span><strong>Delta mese:</strong> <span id="recupero">0h 00m</span></span>
+    </div>
+    <div class="row">
+      <span><strong>Ferie:</strong> <span id="summaryFerie">0</span></span>
+      <span><strong>Permessi:</strong> <span id="summaryPermessi">0</span></span>
+      <span><strong>104:</strong> <span id="summary104">0</span></span>
+    </div>
+    <div class="row">
+      <button id="clearMonth" class="smallBtn">Cancella mese</button>
+      <button id="export" class="smallBtn">Esporta CSV</button>
+    </div>
   </div>
-</div>
 
-<script src="app.js"></script>
-<script>
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js").catch(err => console.error("SW fail:", err));
-}
-</script>
+  <!-- Selezione mese -->
+  <div>
+    <label for="monthPicker">Mese:</label>
+    <input type="month" id="monthPicker">
+  </div>
+
+  <!-- Tabella dati -->
+  <table>
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Entrata</th>
+        <th>Uscita</th>
+        <th>Durata</th>
+        <th>Delta</th>
+        <th>Assenza</th>
+        <th>Azioni</th>
+      </tr>
+    </thead>
+    <tbody id="records"></tbody>
+  </table>
+
+  <!-- Modale assenze -->
+  <div id="absenceModal" class="modal">
+    <div class="modal-content">
+      <label>Data: <input type="date" id="absenceDate"></label><br>
+      <label>Tipo:
+        <select id="absenceType">
+          <option value="ferie">Ferie</option>
+          <option value="permesso">Permesso</option>
+          <option value="104">104</option>
+        </select>
+      </label><br>
+      <label>Ore (solo per permessi e 104): <input type="number" id="absenceHours" min="0" step="0.5"></label><br>
+      <button id="saveAbsence">Salva</button>
+      <button id="closeAbsence">Chiudi</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
